@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import NumberInput from "../components/NumberInput";
 
 export default function Home() {
@@ -7,13 +7,21 @@ export default function Home() {
     "Only show me the keywords of this text: "
   );
   const [text, setText] = useState("");
-  const [temperature, setTemperature] = useState(0.3);
+  const [temperature, setTemperature] = useState(0);
   const [maxTokens, setMaxTokens] = useState(60);
   const [topP, setTopP] = useState(1);
   const [frequencyPenalty, setFrequencyPenalty] = useState(0.8);
   const [presencePenalty, setPresencePenalty] = useState(0);
   const [keywords, setKeywords] = useState("");
   const [fetching, setFetching] = useState(false);
+
+  useEffect(() => {
+    console.log(maxTokens);
+    console.log(temperature);
+    console.log(topP);
+    console.log(frequencyPenalty);
+    console.log(presencePenalty);
+  }, [maxTokens, temperature, topP, frequencyPenalty, presencePenalty]);
 
   const getKeywords = async () => {
     setFetching(true);
@@ -26,7 +34,6 @@ export default function Home() {
         frequency_penalty: frequencyPenalty,
         presence_penalty: presencePenalty,
       });
-      console.log(res.data.result);
       setKeywords(res.data.result);
       setFetching(false);
     } catch (error) {
@@ -42,7 +49,7 @@ export default function Home() {
       <div className="w-[50%] mr-6">
         <h1 className="self-start text-2xl">Configure the settings</h1>
         <div className="flex flex-col w-full">
-          <label for={"prompt-" + id}>Prompt:</label>
+          <label htmlFor={"prompt-" + id}>Prompt:</label>
           <input
             className="border border-black rounded p-1"
             id={"prompt-" + id}
@@ -53,6 +60,8 @@ export default function Home() {
           <NumberInput
             label={"temperature"}
             value={temperature}
+            min={1}
+            max={0}
             setValue={setTemperature}
             id={id}
           />
@@ -62,17 +71,28 @@ export default function Home() {
             setValue={setMaxTokens}
             id={id}
           />
-          <NumberInput label={"topP"} value={topP} setValue={setTopP} id={id} />
+          <NumberInput
+            label={"topP"}
+            value={topP}
+            setValue={setTopP}
+            id={id}
+            min={0}
+            max={1}
+          />
           <NumberInput
             label={"frequencyPenalty"}
             value={frequencyPenalty}
             setValue={setFrequencyPenalty}
+            min={-2}
+            max={2}
             id={id}
           />
           <NumberInput
             label={"presencePenalty"}
             value={presencePenalty}
             setValue={setPresencePenalty}
+            min={-2}
+            max={2}
             id={id}
           />
         </div>
